@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Crime Data App</title>
+</head>
+<body>
+    <link href="Content/BootstrapStyleSheet.css" rel="stylesheet">
+
+    <div style="margin:20px">
+        <h2>All Crimes</h2>
+        <ul id="crimes" />
+    </div>
+    <div style ="margin:20px">
+        <h2>Search by ID</h2>
+        <input type="text" id="crimeId" size="10" align="right" />
+        <input type="button" value="Search" onclick="find();" />
+        <p id="crime" />
+    </div>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+        var uri = 'api/crimes';
+
+        $(document).ready(function () {
+            // Send an AJAX request
+            $.getJSON(uri)
+                .done(function (data) {
+                    // On success, 'data' contains a list of crimes.
+                    $.each(data, function (key, item) {
+                        // Add a list item for the crime.
+                        $('<li>', { text: formatItem(item) }).appendTo($('#crimes'));
+                    });
+                });
+        });
+
+        function formatItem(item) {
+            return item.victim + ' was murdered at time ' + item.time;
+        }
+
+        function find() {
+            var id = $('#crimeId').val();
+            $.getJSON(uri + '/' + id)
+                .done(function (data) {
+                    $('#crime').text(formatItem(data));
+                })
+                .fail(function (jqXHR, textStatus, err) {
+                    $('#crime').text('Error: ' + err);
+                });
+        }
+    </script>
+</body>
+</html>
